@@ -1,6 +1,7 @@
-from typing import Union
+from typing import Optional
 
 from pydantic import BaseModel
+
 
 
 class ChoiceBase(BaseModel):
@@ -12,12 +13,14 @@ class ChoiceBase(BaseModel):
 
 class ChoiceIn(ChoiceBase):
     value: bool
-    pass
+
+
+class ChoiceQuestionId(ChoiceIn):
+    question_id :int 
 
 
 class ChoiceOut(ChoiceBase):
     id: int
-
 
 
 class QuestionBase(BaseModel):
@@ -27,9 +30,10 @@ class QuestionBase(BaseModel):
 
 
 class QuestionIn(QuestionBase):
-    choices: list[ChoiceIn] = []
-
+    pass
 
 class QuestionOut(QuestionBase):
     id: int
+
+class QuestionDetailOut(QuestionOut):
     choices: list[ChoiceOut] = []
