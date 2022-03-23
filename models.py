@@ -24,3 +24,16 @@ class Choice(Base):
     value = Column(Boolean)
     owner_id = Column(Integer, ForeignKey("question.id"))
     owner = relationship("Question",  back_populates="choices")
+
+
+# class Resalt(Base):
+#     """Model Resalt"""
+#     __tablename__ = "resalt"
+
+#     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+#     answer_id = Column(Integer, ForeignKey("choice.id"))
+#     answer_text = Column(String, ForeignKey("choice.text"))
+#     answer = relationship("Choice",  back_populates="resalts_choice")
+#     question_id = Column(Integer, ForeignKey("question.id"))
+#     question = relationship("Question",  back_populates="resalts_question")
+#     answer_value = Column(Boolean)

@@ -40,6 +40,10 @@ def read_question( question_id: int , db: Session = Depends(get_db)):
     questions = service.crud_question.get(db, id=question_id)
     return questions
 
+@app.get("/resalts/{question_id}/",response_model=schemas.ResaltOut)
+def resalt(question_id: int, db: Session = Depends(get_db)):
+    return service.crud_question.results_on_questions(db,id)
+
 
 @app.put("/question/{id}/", response_model=schemas.QuestionOut)
 def update_question(id: int, question: schemas.QuestionIn, db: Session = Depends(get_db)):

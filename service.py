@@ -49,6 +49,7 @@ class CRUDQuestion(CRUDBase[Question, QuestionIn, QuestionUpdate]):
         return db_question
 
 
+
 class CRUDChoice(CRUDBase[Choice, ChoiceIn, ChoiceInUpdate]):
     def create_choice_for_question(
         self,
@@ -80,6 +81,9 @@ class CRUDChoice(CRUDBase[Choice, ChoiceIn, ChoiceInUpdate]):
         for choice in choices:
             self.create_choice_for_question(db, choice, question_id)
         return crud_question.get(db,question_id)
+
+
+
 
 crud_question: CRUDQuestion = CRUDQuestion(Question)
 crud_choice = CRUDChoice(Choice)

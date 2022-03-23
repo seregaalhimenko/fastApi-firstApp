@@ -36,3 +36,17 @@ class QuestionOut(QuestionBase):
 
 class QuestionDetailOut(QuestionOut):
     choices: list[ChoiceOut] = []
+
+
+class ResaltBase(BaseModel):
+    id: int
+    answer_id: int
+    question_id: int
+    answer_text: str
+    answer_value: bool
+    class Config:
+        orm_mode = True
+
+
+class ResaltOut(QuestionBase):
+    resalts: list[ResaltBase] = []
