@@ -3,8 +3,8 @@ from typing import Union
 # from typing import Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import update
-from fastapi.encoders import jsonable_encoder
-
+# from fastapi.encoders import jsonable_encoder
+from fastapi import  HTTPException
 import schemas
 import models
 
@@ -28,7 +28,6 @@ def create_choice(db: Session, choice: schemas.ChoiceIn, question_id: int):
 
 
 def create_list_choice(db: Session, choices: list[schemas.ChoiceIn], question_id: int):
-    print(choices)
     """Creating multiple answers."""
     for choice in choices:
         create_choice(db, choice, question_id)
@@ -50,22 +49,38 @@ def create_question(db: Session, question: schemas.QuestionIn, choices :list[sch
 def get_choice_for_question(db: Session, question_id: int):
     return db.query(models.Choice).filter(models.Choice.owner_id == question_id).all()
 
-def update_choice(db: Session, choice_id: int, сhoice: schemas.ChoiceIn):
-    # сhoice_model = models.Choice.delete().where(models.Choice.id == choice_id)
-    сhoice_model  = update(models.Choice).where(models.Choice.id == choice_id).values(**сhoice.dict())
-    db.add(сhoice_model)
+
+
+def update_choice(db: Session, choice_id: int, choice: schemas.ChoiceIn):
+    db_choice = db.get(models.Choice, choice_id)
+    if not db_choice:
+        raise HTTPException(status_code=404, detail="Choice not found")
+    choice_data = choice.dict(exclude_unset=True)
+    for key, value in choice_data.items():
+        setattr(db_choice, key, value)
+    db.add(db_choice)
     db.commit()
-    db.refresh(сhoice_model)
-    return сhoice_model
+    db.refresh(db_choice)
+    return db_choice
 
 
-# def update(db_session: Session, *, db_obj: models.Choice, obj_in: schemas.ChoiceIn) ->models.Choice:
-#     obj_data = jsonable_encoder(db_obj)
-#     update_data = obj_in.dict(skip_defaults=True)
-#     for field in obj_data:
-#         if field in update_data:
-#             setattr(db_obj, field, update_data[field])
-#     db_session.add(db_obj)
-#     db_session.commit()
-#     db_session.refresh(db_obj)
-#     return db_obj
+def update_question(db: Session, question_id: int, question: schemas.QuestionIn):
+    db_question = db.get(models.Question, question_id)
+    if not db_question:
+        raise HTTPException(status_code=404, detail="Question not found")
+    question_data = question.dict(exclude_unset=True)
+    for key, value in question_data.items():
+        setattr(db_question, key, value)
+    db.add(db_question)
+    db.commit()
+    db.refresh(db_question)
+    return db_question
+
+    
+def delete_question(db: Session,question_id: int):
+        question = db.get(models.Question, question_id)
+        if not question:
+            raise HTTPException(status_code=404, detail="Question not found")
+        db.delete(question)
+        db.commit()
+        return {"ok": True}

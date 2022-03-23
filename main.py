@@ -4,7 +4,7 @@ from pydantic import Field
 import models
 import crud 
 import schemas 
-
+import service
 from core.db import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
@@ -53,3 +53,7 @@ async def update_choice(choice_id: int, choice: schemas.ChoiceIn, db: Session = 
 @app.put("/2choice/{choice_id}", response_model=schemas.ChoiceOut)
 async def update(choice_id: int, choice: schemas.ChoiceIn, db: Session = Depends(get_db)):
    return crud.update_choice(db,choice_id,choice) 
+
+@app.delete("/question/{question_id}")
+def delete_question(question_id: int,db: Session = Depends(get_db)):
+    return crud.delete_question(db,question_id)

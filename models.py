@@ -11,7 +11,7 @@ class Question(Base):
     
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     text = Column(String)
-    choices = relationship("Choice", back_populates="owner")
+    choices = relationship("Choice", cascade="all, delete-orphan", back_populates="owner")
 
 
 class Choice(Base):
@@ -23,4 +23,4 @@ class Choice(Base):
     text = Column(String)
     value = Column(Boolean)
     owner_id = Column(Integer, ForeignKey("question.id"))
-    owner = relationship("Question", back_populates="choices")
+    owner = relationship("Question",  back_populates="choices")
