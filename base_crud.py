@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from core.db import Base
 
 
+
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
@@ -36,7 +37,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         if not db_obj:
             raise HTTPException(
                 status_code=404,
-                detail="{} not found".format(self.model)
+                detail="{} not found".format(self.model.__name__)
             )
         obj_data = obj_in.dict(exclude_unset=True)
         for key, value in obj_data.items():
@@ -52,11 +53,11 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         if not obj:
             raise HTTPException(
                 status_code=404, 
-                detail="{} not found".format(self.model)
+                detail="{} not found".format(self.model.__name__)
                 )  
         db_session.delete(obj)
         db_session.commit()
-        return obj
+        return {"ok": True}
 
     def create(self, db_session: Session, *, obj_in: CreateSchemaType) -> ModelType:
         obj_in_data = jsonable_encoder(obj_in)

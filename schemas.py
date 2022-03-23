@@ -15,12 +15,11 @@ class ChoiceIn(ChoiceBase):
     value: bool
 
 
-class ChoiceQuestionId(ChoiceIn):
-    question_id :int 
-
-
 class ChoiceOut(ChoiceBase):
     id: int
+
+class ChoiceQuestionId(ChoiceOut):
+    owner_id :int 
 
 
 class QuestionBase(BaseModel):

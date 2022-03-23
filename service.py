@@ -5,6 +5,7 @@ from schemas import ChoiceIn
 from schemas import ChoiceIn as ChoiceInUpdate
 from models import Question, Choice
 from base_crud import CRUDBase
+from fastapi import  HTTPException
 
 # def create_list_choice(db: Session, choices: list[ChoiceIn], question_id: int):#  жаль что не получилось !
 #     """Creating multiple answers."""
@@ -15,7 +16,7 @@ from base_crud import CRUDBase
 class CRUDQuestion(CRUDBase[Question, QuestionIn, QuestionUpdate]):
 
 
-    def create_choice(self, db: Session, choice: ChoiceIn, question_id: int):
+    def __create_choice(self, db: Session, choice: ChoiceIn, question_id: int):
         """Creating answer."""
         db_choice = Choice(**choice.dict(), owner_id=question_id)
         db.add(db_choice)
@@ -23,10 +24,10 @@ class CRUDQuestion(CRUDBase[Question, QuestionIn, QuestionUpdate]):
         db.refresh(db_choice)
         return db_choice
 
-    def create_list_choice(self, db: Session, choices: list[ChoiceIn], question_id: int):
+    def __create_list_choice(self, db: Session, choices: list[ChoiceIn], question_id: int):
         """Creating multiple answers."""
         for choice in choices:
-            self.create_choice(db, choice, question_id)
+            self.__create_choice(db, choice, question_id)
         return self.get(db,question_id)
 
     def create(
@@ -43,7 +44,7 @@ class CRUDQuestion(CRUDBase[Question, QuestionIn, QuestionUpdate]):
         db.add(db_question)
         db.commit()
         if choices:
-            return self.create_list_choice(db,choices=choices, question_id=db_question.id)
+            return self.__create_list_choice(db,choices=choices, question_id=db_question.id)
         db.refresh(db_question)    
         return db_question
 
@@ -56,6 +57,12 @@ class CRUDChoice(CRUDBase[Choice, ChoiceIn, ChoiceInUpdate]):
         question_id: int
         ):
         """Creating answer."""
+        obj = db.get(Question, question_id)
+        if not obj:
+            raise HTTPException(
+                status_code=404, 
+                detail="question_id not found"
+                )
         db_choice = Choice(**choice.dict(), owner_id=question_id)
         db.add(db_choice)
         db.commit()
