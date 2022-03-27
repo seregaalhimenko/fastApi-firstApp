@@ -9,6 +9,9 @@ class ChoiceBase(BaseModel):
 class ChoiceIn(ChoiceBase):
     value: bool
     owner_id :Optional[int] = None
+
+class ShortChoiceIn(ChoiceBase):
+    value: bool
     
 class ChoiceOut(ChoiceBase):
     id: int

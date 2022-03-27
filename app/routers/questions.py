@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.dependencies import get_db
 
 from app.schemas.questionSchem import QuestionOut, QuestionDetailOut, QuestionIn
-from app.schemas.choiceSchem import ChoiceIn
+from app.schemas.choiceSchem import ShortChoiceIn
 from app.schemas.answerSchem import AnswerListAndQuestion
 
 from app.service import crud_question, read_resalt_for_question
@@ -15,7 +15,7 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=QuestionDetailOut, status_code=201)
-def create_question(question: QuestionIn, choices :list[ChoiceIn] = Body(...), db: Session = Depends(get_db)):
+def create_question(question: QuestionIn, choices :list[ShortChoiceIn] = Body(...), db: Session = Depends(get_db)):
     """ Сreating a question with one or more answers."""
     return crud_question.create(db=db, question=question,choices=choices)
 
