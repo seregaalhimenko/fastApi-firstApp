@@ -1,20 +1,18 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, Query
 from fastapi import  HTTPException
+
 
 from .schemas.questionSchem import  QuestionIn
 from .schemas.questionSchem import  QuestionIn as QuestionUpdate
 from .schemas.choiceSchem import ChoiceIn
 from .schemas.choiceSchem import ChoiceIn as ChoiceInUpdate
 from .schemas.resaltSchem import ResaltIn
+from .schemas.answerSchem import AnswerListAndQuestion
+
+
 from .models import Question, Choice, Resalt
 from .base_crud import CRUDBase
 
-
-# def create_list_choice(db: Session, choices: list[ChoiceIn], question_id: int):#  жаль что не получилось !
-#     """Creating multiple answers."""
-#     for choice in choices:
-#         CRUDChoice(Choice).create_choice_for_question(db, choice, question_id)
-#     return CRUDQuestion(Question).get(db,question_id)
 
 class CRUDQuestion(CRUDBase[Question, QuestionIn, QuestionUpdate]):
 
@@ -87,6 +85,30 @@ class CRUDChoice(CRUDBase[Choice, ChoiceIn, ChoiceInUpdate]):
 
 class CRUDResalt(CRUDBase[Resalt,ResaltIn,ResaltIn]):
     pass
+
+
+def _result_handler(db:Session, question_id: int) ->Query:
+    """выбранные ответы на вопрос"""
+    return db.query(
+        Resalt.answer_id, 
+        Choice.text,
+        Choice.value
+        ).filter(
+            Resalt.question_id == question_id
+            ).join(
+                Choice, Resalt.answer_id == Choice.id
+                ).all()
+
+
+def read_resalt_for_question(
+        db:Session,
+        question_id: int,
+    ):
+    ques = db.query(Question).filter(Question.id == question_id).first()
+    list_answer = _result_handler(db,question_id=question_id)
+    response = AnswerListAndQuestion(question = ques,answers=list_answer)
+    return response
+
 
 crud_question: CRUDQuestion = CRUDQuestion(Question)
 crud_choice: CRUDChoice = CRUDChoice(Choice)
