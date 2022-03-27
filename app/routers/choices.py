@@ -2,25 +2,29 @@ from fastapi import APIRouter, Depends #, HTTPException
 from sqlalchemy.orm import Session
 
 from ..dependencies import get_db
-from ..schemas.choiceSchem import ChoiceOut, ChoiceIn, ChoiceQuestionId
+from ..schemas.choiceSchem import ChoiceOut, ChoiceIn
+from ..schemas.questionSchem import QuestionDetailOut
+
 from ..service import crud_choice
 
 
 router = APIRouter(
-    prefix="/coice",
-    tags=["Coice"],
+    prefix="/choice",
+    tags=["Choice"],
 )
 
-@router.post("/", response_model=ChoiceOut) ####
-def create_choice(choice: ChoiceQuestionId , db: Session = Depends(get_db)):
-    """Creating an answer for a question"""
-    choice_dict =choice.dict()
-    question_id = choice_dict['question_id']
-    del choice_dict['question_id']
-    choice = ChoiceIn(**choice_dict)
-    return crud_choice.create_choice_for_question(db=db, choice=choice ,question_id=question_id)
+@router.post("/{question_id}",response_model=QuestionDetailOut) #### возвращает вопрос
+def create_list_choice(choices: list[ChoiceIn], question_id: int, db: Session = Depends(get_db)):
+    """Create answers to a question"""
+    return crud_choice.create_list_choice(db=db, choices=choices ,question_id=question_id)
 
-@router.get("/{id}/",response_model=ChoiceQuestionId)
+
+@router.post("/")
+def create_choice(choice: ChoiceIn, db: Session = Depends(get_db)):
+    """Create one answer per question"""
+    return crud_choice.create(db_session=db, obj_in=choice)
+
+@router.get("/{id}/",response_model=ChoiceIn)
 def read_choice(id: int , db: Session = Depends(get_db)):
     """Getting a specific answer"""
     choice = crud_choice.get(db,id=id)

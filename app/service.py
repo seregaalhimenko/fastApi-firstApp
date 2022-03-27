@@ -56,15 +56,16 @@ class CRUDChoice(CRUDBase[Choice, ChoiceIn, ChoiceInUpdate]):
         db: Session,
         choice: ChoiceIn,
         question_id: int
-        ):
+        )->Choice:
         """Creating answer."""
         obj = db.get(Question, question_id)
         if not obj:
             raise HTTPException(
                 status_code=404, 
-                detail="question_id not found"
+                detail="There is no question with id = {question_id}"
                 )
-        db_choice = Choice(**choice.dict(), owner_id=question_id)
+        choice.owner_id=question_id
+        db_choice = Choice(**choice.dict())
         db.add(db_choice)
         db.commit()
         db.refresh(db_choice)
@@ -76,7 +77,7 @@ class CRUDChoice(CRUDBase[Choice, ChoiceIn, ChoiceInUpdate]):
         db: Session,
         choices: list[ChoiceIn],
         question_id: int
-        ):
+        )->Question:
         """Creating multiple answers."""
         for choice in choices:
             self.create_choice_for_question(db, choice, question_id)
@@ -104,9 +105,14 @@ def read_resalt_for_question(
         db:Session,
         question_id: int,
     ):
-    ques = db.query(Question).filter(Question.id == question_id).first()
+    question_obj = db.get(Question, question_id)
+    if not question_obj:
+            raise HTTPException(
+                status_code=404, 
+                detail="There is no question with id = {question_id}"
+                )
     list_answer = _result_handler(db,question_id=question_id)
-    response = AnswerListAndQuestion(question = ques,answers=list_answer)
+    response = AnswerListAndQuestion(question = question_obj,answers=list_answer)
     return response
 
 

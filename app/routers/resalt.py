@@ -19,7 +19,7 @@ def create_resalt(request: ResaltIn, db:Session = Depends(get_db)):
 def read_resalt(id: int, db: Session = Depends(get_db)):
     return crud_resalt.get(db_session=db, id=id)
 
-@router.get("/", response_model=list[ResaltOut])
+@router.get("/")
 def read_list_resalt(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud_resalt.get_multi(db_session=db,skip=skip,limit=limit)
 

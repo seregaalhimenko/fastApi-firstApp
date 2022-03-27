@@ -24,6 +24,13 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self.model = model
 
     def get(self, db_session: Session, id: int) -> Optional[ModelType]:
+        # obj = db_session.get(self.model, id)
+        # if not obj:
+        #     raise HTTPException(                                            # если null не устраивает
+        #         status_code=404, 
+        #         detail="There is no {self.model.__name__} with id = {id}"
+        #         )
+        # return obj
         return db_session.query(self.model).filter(self.model.id == id).first()
 
     def get_multi(self, db_session: Session, *, skip=0, limit=100) -> list[ModelType]:
