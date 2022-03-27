@@ -14,7 +14,7 @@ router = APIRouter(
     tags=["Question"],
 )
 
-@router.post("/", response_model=QuestionDetailOut)
+@router.post("/", response_model=QuestionDetailOut, status_code=201)
 def create_question(question: QuestionIn, choices :list[ChoiceIn] = Body(...), db: Session = Depends(get_db)):
     """ Сreating a question with one or more answers."""
     return crud_question.create(db=db, question=question,choices=choices)
@@ -40,7 +40,7 @@ def update_question(id: int, question: QuestionIn, db: Session = Depends(get_db)
    return crud_question.update(db, id=id, obj_in = question)
 
 
-@router.delete("/{id}/")
+@router.delete("/{id}/", status_code=204)
 def delete_question(id: int,db: Session = Depends(get_db)):
     """Delete question and answers"""
     return crud_question.remove(db, id=id)
