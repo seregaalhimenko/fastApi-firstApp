@@ -1,11 +1,14 @@
 from sqlalchemy.orm import Session
-from schemas import  QuestionIn
-from schemas import  QuestionIn as QuestionUpdate
-from schemas import ChoiceIn
-from schemas import ChoiceIn as ChoiceInUpdate
-from models import Question, Choice
-from base_crud import CRUDBase
 from fastapi import  HTTPException
+
+from .schemas.questionSchem import  QuestionIn
+from .schemas.questionSchem import  QuestionIn as QuestionUpdate
+from .schemas.choiceSchem import ChoiceIn
+from .schemas.choiceSchem import ChoiceIn as ChoiceInUpdate
+from .schemas.resaltSchem import ResaltIn
+from .models import Question, Choice, Resalt
+from .base_crud import CRUDBase
+
 
 # def create_list_choice(db: Session, choices: list[ChoiceIn], question_id: int):#  жаль что не получилось !
 #     """Creating multiple answers."""
@@ -49,7 +52,6 @@ class CRUDQuestion(CRUDBase[Question, QuestionIn, QuestionUpdate]):
         return db_question
 
 
-
 class CRUDChoice(CRUDBase[Choice, ChoiceIn, ChoiceInUpdate]):
     def create_choice_for_question(
         self,
@@ -83,7 +85,11 @@ class CRUDChoice(CRUDBase[Choice, ChoiceIn, ChoiceInUpdate]):
         return crud_question.get(db,question_id)
 
 
-
+class CRUDResalt(CRUDBase[Resalt,ResaltIn,ResaltIn]):
+    pass
 
 crud_question: CRUDQuestion = CRUDQuestion(Question)
-crud_choice = CRUDChoice(Choice)
+crud_choice: CRUDChoice = CRUDChoice(Choice)
+crud_resalt: CRUDResalt = CRUDResalt(Resalt)
+
+

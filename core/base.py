@@ -1,6 +1,6 @@
 from .db import Base
-from quiz.models import Question
-from quiz.models import Choice
-# from quiz.models import Resalt
+from app.models import Question
+from app.models import Choice
+from app.models import Resalt
 
 
