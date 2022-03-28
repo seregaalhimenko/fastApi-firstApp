@@ -33,7 +33,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return obj
 
     def get_multi(self, db_session: Session, *, skip=0, limit=100) -> list[ModelType]:
-        if  limit > 0 and 0 < skip < limit:
+        if  limit > 0 and 0 <= skip < limit:
             return db_session.query(self.model).offset(skip).limit(limit).all()
         raise HTTPException(                               
                 status_code=404, 
