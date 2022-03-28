@@ -19,6 +19,6 @@ class ChoiceOut(ChoiceBase):
     """Display output without value"""
     id: int
 
-class ChoiceOutWithValue:
+class ChoiceOutWithValue(ChoiceOut):
     """Display output with value"""
     value: bool 

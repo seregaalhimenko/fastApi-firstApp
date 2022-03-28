@@ -1,5 +1,4 @@
-from secrets import choice
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from .questionSchem import QuestionDetailOut
 from .choiceSchem import  ChoiceOut
 
@@ -19,10 +18,15 @@ class AnswerOut(ChoiceOut):
     """The answer that was selected"""
     pass
 
+
 class ResaltOut(ResaltBase):
-    """Full display of the  result """
+    """Display of the  result """
     id: int
     answer_id: int
     question_id: int
+
+
+class ResaltDatailOut(ResaltOut):
+    """Full display of the  result """
     question: QuestionDetailOut
-    choice: AnswerOut  # = field alias
+    choice: AnswerOut  # = field alias?

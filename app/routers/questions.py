@@ -2,7 +2,7 @@ from fastapi import Body, APIRouter, Depends
 from fastapi.responses import JSONResponse
 
 from sqlalchemy.orm import Session
-from app.dependencies import get_db
+from app.dependencies import get_db, output_schema_definition
 
 from app.schemas.questionSchem import QuestionOut, QuestionDetailOut, QuestionIn
 from app.schemas.choiceSchem import ShortChoiceIn
@@ -22,7 +22,7 @@ def create_question(question: QuestionIn, choices :list[ShortChoiceIn] = Body(..
     return JSONResponse(status_code=201,headers={"Location":"/choice/{}/".format(obj.id)})
 
 
-@router.get("/list/", response_model=list[QuestionOut])
+@router.get("/", response_model=list[QuestionOut])
 def read_list_questions(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """Getting a list of questions"""
     questions = crud_question.get_multi(db, skip=skip, limit=limit)
@@ -36,11 +36,7 @@ def read_question(id: int , db: Session = Depends(get_db), detail_mode: bool=Fal
         by default fasle if set to true there will be a verbose output of the question
     """
     question = crud_question.get(db, id=id)
-    if detail_mode:
-        scheme = QuestionDetailOut.from_orm(question)
-        return scheme
-    scheme = QuestionOut.from_orm(question)
-    return scheme
+    return output_schema_definition(QuestionDetailOut, QuestionOut, predicate=detail_mode, query=question)
 
 
 @router.put("/{id}/",response_model=QuestionOut)
@@ -51,7 +47,7 @@ def update_question(id: int, question: QuestionIn, db: Session = Depends(get_db)
 
 @router.delete("/{id}/")
 def delete_question(id: int,db: Session = Depends(get_db)):
-    """Delete question and answers"""
+    """Delete question and answers,result """
     crud_question.remove(db, id=id)
     return JSONResponse(status_code=204)
 

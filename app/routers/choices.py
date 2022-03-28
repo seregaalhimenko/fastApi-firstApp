@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from ..dependencies import get_db
-from ..schemas.choiceSchem import ChoiceOut, ChoiceIn
+from ..schemas.choiceSchem import ChoiceIn
 from ..schemas.questionSchem import QuestionDetailOut
 
 from ..service import crud_choice
@@ -17,11 +17,10 @@ router = APIRouter(
 @router.post("/{question_id}",response_model=QuestionDetailOut, status_code=201) 
 def create_list_choice(choices: list[ChoiceIn], question_id: int, db: Session = Depends(get_db)):
     """Create answers to a question"""
-    
     return crud_choice.create_list_choice(db=db, choices=choices ,question_id=question_id)
 
 
-@router.post("/",status_code=201)
+@router.post("/")
 def create_choice(choice: ChoiceIn, db: Session = Depends(get_db)):
     """Create one answer per question"""
     obj = crud_choice.create(db_session=db, obj_in=choice)
@@ -34,13 +33,13 @@ def read_choice(id: int , db: Session = Depends(get_db)):
     return choice
 
 
-@router.put("/{id}/", response_model=ChoiceOut)
+@router.put("/{id}/", response_model=ChoiceIn)
 def update_choice(id: int, choice: ChoiceIn, db: Session = Depends(get_db)):
     """Answer update"""
     return crud_choice.update(db, id=id, obj_in=choice) 
 
 
-@router.delete("/{id}/", status_code=204)
+@router.delete("/{id}/")
 def delete_choice(id: int,db: Session = Depends(get_db)):
     """Delete answer"""
     crud_choice.remove(db, id=id)
