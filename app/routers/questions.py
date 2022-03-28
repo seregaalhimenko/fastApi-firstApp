@@ -6,9 +6,8 @@ from app.dependencies import get_db, output_schema_definition
 
 from app.schemas.questionSchem import QuestionOut, QuestionDetailOut, QuestionIn
 from app.schemas.choiceSchem import ShortChoiceIn
-from app.schemas.answerSchem import AnswerListAndQuestion
 
-from app.service import crud_question, read_resalt_for_question
+from app.service import crud_question
 
 router = APIRouter(
     prefix="/question",
@@ -50,7 +49,3 @@ def delete_question(id: int,db: Session = Depends(get_db)):
     """Delete question and answers,result """
     crud_question.remove(db, id=id)
     return JSONResponse(status_code=204)
-
-@router.get("/{id}/resalt", response_model=AnswerListAndQuestion) # убрать в резалт
-def resalt(id: int, db: Session = Depends(get_db)):
-    return read_resalt_for_question(db=db, question_id=id)

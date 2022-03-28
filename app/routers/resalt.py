@@ -4,8 +4,11 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from ..dependencies import get_db, output_schema_definition
-from ..service import crud_resalt
+from ..service import crud_resalt, read_resalt_for_question
+
 from ..schemas.resaltSchem import  ResaltIn, ResaltOut, ResaltDatailOut
+from ..schemas.answerSchem import AnswerListAndQuestion
+
 
 router = APIRouter(
     prefix="/resalt",
@@ -46,3 +49,9 @@ def delete_resalt(id: int, db: Session =Depends(get_db)):
     """Result delete"""
     crud_resalt.remove(db_session=db,id=id)
     return JSONResponse(status_code=204)
+
+
+@router.get("/question/{question_id}/", response_model=AnswerListAndQuestion)
+def resalt_for_question(id: int, db: Session = Depends(get_db)):
+    """ Result for a specific question """
+    return read_resalt_for_question(db=db, question_id=id)
