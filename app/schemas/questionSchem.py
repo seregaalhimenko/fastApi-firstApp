@@ -10,10 +10,13 @@ class QuestionBase(BaseModel):
 
 
 class QuestionIn(QuestionBase):
+    """Display question model without id"""
     pass
 
 class QuestionOut(QuestionBase):
+    """Question model display"""
     id: int
 
 class QuestionDetailOut(QuestionOut):
+    """Displaying a question with all possible answers"""
     choices: list[ChoiceOut] = []

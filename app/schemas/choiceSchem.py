@@ -7,13 +7,18 @@ class ChoiceBase(BaseModel):
         orm_mode = True
 
 class ChoiceIn(ChoiceBase):
+    """Display input with question id"""
     value: bool
     owner_id :Optional[int] = None
 
 class ShortChoiceIn(ChoiceBase):
-    value: bool
+    """Display input without question id"""
+    value: bool 
     
 class ChoiceOut(ChoiceBase):
+    """Display output without value"""
     id: int
 
-    
+class ChoiceOutWithValue:
+    """Display output with value"""
+    value: bool 
