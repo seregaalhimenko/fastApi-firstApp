@@ -34,4 +34,5 @@ def update_resalt(id: int,request: ResaltIn, db: Session = Depends(get_db)):
 
 @router.delete("/{id}", status_code=204)
 def delete_resalt(id: int, db: Session =Depends(get_db)):
-    return crud_resalt.remove(db_session=db,id=id)
+    crud_resalt.remove(db_session=db,id=id)
+    return JSONResponse(status_code=204)

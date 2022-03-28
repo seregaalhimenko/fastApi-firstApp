@@ -45,7 +45,8 @@ def update_question(id: int, question: QuestionIn, db: Session = Depends(get_db)
 @router.delete("/{id}/", status_code=204)
 def delete_question(id: int,db: Session = Depends(get_db)):
     """Delete question and answers"""
-    return crud_question.remove(db, id=id)
+    crud_question.remove(db, id=id)
+    return JSONResponse(status_code=204)
 
 @router.get("/{id}/resalt", response_model=AnswerListAndQuestion)
 def resalt(id: int, db: Session = Depends(get_db)):

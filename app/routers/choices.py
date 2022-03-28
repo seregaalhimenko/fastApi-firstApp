@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Response #, HTTPException
+from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
@@ -25,9 +25,7 @@ def create_list_choice(choices: list[ChoiceIn], question_id: int, db: Session = 
 def create_choice(choice: ChoiceIn, db: Session = Depends(get_db)):
     """Create one answer per question"""
     obj = crud_choice.create(db_session=db, obj_in=choice)
-    
     return JSONResponse(status_code=201,headers={"Location":"/choice/{}/".format(obj.id)})
-    # return crud_choice.create(db_session=db, obj_in=choice)
 
 @router.get("/{id}/",response_model=ChoiceIn)
 def read_choice(id: int , db: Session = Depends(get_db)):
@@ -45,4 +43,5 @@ def update_choice(id: int, choice: ChoiceIn, db: Session = Depends(get_db)):
 @router.delete("/{id}/", status_code=204)
 def delete_choice(id: int,db: Session = Depends(get_db)):
     """Delete answer"""
-    return crud_choice.remove(db, id=id)
+    crud_choice.remove(db, id=id)
+    return JSONResponse(status_code=204)
