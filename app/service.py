@@ -1,3 +1,4 @@
+from random import choices
 from sqlalchemy.orm import Session, Query
 from fastapi import  HTTPException
 
@@ -62,7 +63,7 @@ class CRUDChoice(CRUDBase[Choice, ChoiceIn, ChoiceInUpdate]):
         if not obj:
             raise HTTPException(
                 status_code=404, 
-                detail="There is no question with id = {question_id}"
+                detail=f"There is no question with id = {question_id}"
                 )
         choice.owner_id=question_id
         db_choice = Choice(**choice.dict())
@@ -85,7 +86,17 @@ class CRUDChoice(CRUDBase[Choice, ChoiceIn, ChoiceInUpdate]):
 
 
 class CRUDResalt(CRUDBase[Resalt,ResaltIn,ResaltIn]):
-    pass
+     
+     def create(self, db_session: Session, *, obj_in: ResaltIn) -> Resalt:
+        obj_in.answer_id
+        obj_in.question_id
+        choice: Choice = db_session.get(Choice, obj_in.answer_id)
+        if choice.owner_id != obj_in.question_id:
+            raise HTTPException(
+                status_code=404, 
+                detail=f"There is no such answer in the question"
+                )
+        return super().create(db_session, obj_in=obj_in)
 
 
 def _result_handler(db:Session, question_id: int) ->Query:
@@ -109,7 +120,7 @@ def read_resalt_for_question(
     if not question_obj:
             raise HTTPException(
                 status_code=404, 
-                detail="There is no question with id = {question_id}"
+                detail=f"There is no question with id = {question_id}"
                 )
     list_answer = _result_handler(db,question_id=question_id)
     response = AnswerListAndQuestion(question = question_obj,answers=list_answer)
