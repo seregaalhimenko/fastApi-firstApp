@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends #, HTTPException
+from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
+
 from sqlalchemy.orm import Session
 
 from ..dependencies import get_db
@@ -10,9 +12,10 @@ router = APIRouter(
     tags=["Resalt"],
 )
 
-@router.post("/")
+@router.post("/",status_code=201)
 def create_resalt(request: ResaltIn, db:Session = Depends(get_db)):
-    return crud_resalt.create(db, obj_in= request)
+    obj =  crud_resalt.create(db, obj_in= request)
+    return JSONResponse(status_code=201,headers={"Location":"/choice/{}/".format(obj.id)})
 
 
 @router.get("/{id}/")
@@ -29,6 +32,6 @@ def update_resalt(id: int,request: ResaltIn, db: Session = Depends(get_db)):
     return crud_resalt.update(db_session=db, id=id, obj_in=request)
 
 
-@router.delete("/{id}")
+@router.delete("/{id}", status_code=204)
 def delete_resalt(id: int, db: Session =Depends(get_db)):
     return crud_resalt.remove(db_session=db,id=id)

@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends #, HTTPException
+from fastapi import APIRouter, Depends, Response #, HTTPException
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from ..dependencies import get_db
@@ -13,16 +14,20 @@ router = APIRouter(
     tags=["Choice"],
 )
 
-@router.post("/{question_id}",response_model=QuestionDetailOut, status_code=201) #### возвращает вопрос
+@router.post("/{question_id}",response_model=QuestionDetailOut, status_code=201) 
 def create_list_choice(choices: list[ChoiceIn], question_id: int, db: Session = Depends(get_db)):
     """Create answers to a question"""
+    
     return crud_choice.create_list_choice(db=db, choices=choices ,question_id=question_id)
 
 
 @router.post("/",status_code=201)
 def create_choice(choice: ChoiceIn, db: Session = Depends(get_db)):
     """Create one answer per question"""
-    return crud_choice.create(db_session=db, obj_in=choice)
+    obj = crud_choice.create(db_session=db, obj_in=choice)
+    
+    return JSONResponse(status_code=201,headers={"Location":"/choice/{}/".format(obj.id)})
+    # return crud_choice.create(db_session=db, obj_in=choice)
 
 @router.get("/{id}/",response_model=ChoiceIn)
 def read_choice(id: int , db: Session = Depends(get_db)):

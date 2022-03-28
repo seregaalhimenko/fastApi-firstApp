@@ -1,4 +1,5 @@
-from fastapi import Body, APIRouter, Depends #, HTTPException
+from fastapi import Body, APIRouter, Depends 
+from fastapi.responses import JSONResponse
 
 from sqlalchemy.orm import Session
 from app.dependencies import get_db
@@ -17,7 +18,8 @@ router = APIRouter(
 @router.post("/", response_model=QuestionDetailOut, status_code=201)
 def create_question(question: QuestionIn, choices :list[ShortChoiceIn] = Body(...), db: Session = Depends(get_db)):
     """ Сreating a question with one or more answers."""
-    return crud_question.create(db=db, question=question,choices=choices)
+    obj = crud_question.create(db=db, question=question,choices=choices)
+    return JSONResponse(status_code=201,headers={"Location":"/choice/{}/".format(obj.id)})
 
 
 @router.get("/list/", response_model=list[QuestionOut])
