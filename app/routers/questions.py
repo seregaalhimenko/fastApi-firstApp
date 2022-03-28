@@ -15,7 +15,7 @@ router = APIRouter(
     tags=["Question"],
 )
 
-@router.post("/", response_model=QuestionDetailOut, status_code=201)
+@router.post("/")
 def create_question(question: QuestionIn, choices :list[ShortChoiceIn] = Body(...), db: Session = Depends(get_db)):
     """ Сreating a question with one or more answers."""
     obj = crud_question.create(db=db, question=question,choices=choices)
@@ -23,31 +23,38 @@ def create_question(question: QuestionIn, choices :list[ShortChoiceIn] = Body(..
 
 
 @router.get("/list/", response_model=list[QuestionOut])
-def read_questions(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def read_list_questions(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """Getting a list of questions"""
     questions = crud_question.get_multi(db, skip=skip, limit=limit)
     return questions
 
 
-@router.get("/{id}/", response_model=QuestionDetailOut)
-def read_question( id: int , db: Session = Depends(get_db)):
-    """Getting a specific question"""
-    questions = crud_question.get(db, id=id)
-    return questions
+@router.get("/{id}/")
+def read_question(id: int , db: Session = Depends(get_db), detail_mode: bool=False):
+    """Getting a specific question
+        params: detail_mode
+        by default fasle if set to true there will be a verbose output of the question
+    """
+    question = crud_question.get(db, id=id)
+    if detail_mode:
+        scheme = QuestionDetailOut.from_orm(question)
+        return scheme
+    scheme = QuestionOut.from_orm(question)
+    return scheme
 
 
-@router.put("/{id}/")
+@router.put("/{id}/",response_model=QuestionOut)
 def update_question(id: int, question: QuestionIn, db: Session = Depends(get_db)):
    """Question update"""
    return crud_question.update(db, id=id, obj_in = question)
 
 
-@router.delete("/{id}/", status_code=204)
+@router.delete("/{id}/")
 def delete_question(id: int,db: Session = Depends(get_db)):
     """Delete question and answers"""
     crud_question.remove(db, id=id)
     return JSONResponse(status_code=204)
 
-@router.get("/{id}/resalt", response_model=AnswerListAndQuestion)
+@router.get("/{id}/resalt", response_model=AnswerListAndQuestion) # убрать в резалт
 def resalt(id: int, db: Session = Depends(get_db)):
     return read_resalt_for_question(db=db, question_id=id)
