@@ -25,7 +25,7 @@ class Choice(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     text = Column(String)
-    value = Column(Boolean)
+    value = Column(Boolean) # determines the correct choice or not
     owner_id = Column(Integer, ForeignKey("question.id"))
 
     owner = relationship("Question",  back_populates="choices")

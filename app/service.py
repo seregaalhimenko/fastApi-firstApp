@@ -1,11 +1,11 @@
 from random import choices
 from sqlalchemy.orm import Session, Query
-from fastapi import  HTTPException
+from fastapi import HTTPException
 
 
-from .schemas.questionSchem import  QuestionIn
-from .schemas.questionSchem import  QuestionIn as QuestionUpdate
-from .schemas.choiceSchem import ChoiceIn
+from .schemas.questionSchem import QuestionIn, QuestionDetailIn
+from .schemas.questionSchem import QuestionIn as QuestionUpdate
+from .schemas.choiceSchem import ChoiceIn, ShortChoiceIn
 from .schemas.choiceSchem import ChoiceIn as ChoiceInUpdate
 from .schemas.resaltSchem import ResaltIn
 from .schemas.answerSchem import AnswerListAndQuestion
@@ -17,10 +17,9 @@ from .base_crud import CRUDBase
 
 class CRUDQuestion(CRUDBase[Question, QuestionIn, QuestionUpdate]):
 
-
-    def __create_choice(self, db: Session, choice: ChoiceIn, question_id: int):
+    def __create_choice(self, db: Session, choice: dict, question_id: int):
         """Creating answer."""
-        db_choice = Choice(**choice.dict(), owner_id=question_id)
+        db_choice = Choice(**choice, owner_id=question_id)
         db.add(db_choice)
         db.commit()
         db.refresh(db_choice)
@@ -30,24 +29,23 @@ class CRUDQuestion(CRUDBase[Question, QuestionIn, QuestionUpdate]):
         """Creating multiple answers."""
         for choice in choices:
             self.__create_choice(db, choice, question_id)
-        return self.get(db,question_id)
+        return self.get(db, question_id)
 
-    def create(
+    def castom_create(
         self,
         db: Session,
-        question: QuestionIn,
-        choices :list[ChoiceIn]
-        ):
-
+        question: QuestionDetailIn,
+    ):
         """ Сreating a question with one or more answers."""
-        
+        choices = question.dict()["choices"]
         question_dict = question.dict()
+        del question_dict["choices"]
         db_question = Question(**question_dict)
         db.add(db_question)
         db.commit()
         if choices:
-            return self.__create_list_choice(db,choices=choices, question_id=db_question.id)
-        db.refresh(db_question)    
+            return self.__create_list_choice(db, choices=choices, question_id=db_question.id)
+        db.refresh(db_question)
         return db_question
 
 
@@ -57,78 +55,76 @@ class CRUDChoice(CRUDBase[Choice, ChoiceIn, ChoiceInUpdate]):
         db: Session,
         choice: ChoiceIn,
         question_id: int
-        )->Choice:
+    ) -> Choice:
         """Creating answer."""
         obj = db.get(Question, question_id)
         if not obj:
             raise HTTPException(
-                status_code=404, 
+                status_code=404,
                 detail=f"There is no question with id = {question_id}"
-                )
-        choice.owner_id=question_id
+            )
+        choice.owner_id = question_id
         db_choice = Choice(**choice.dict())
         db.add(db_choice)
         db.commit()
         db.refresh(db_choice)
         return db_choice
 
-
     def create_list_choice(
         self,
         db: Session,
         choices: list[ChoiceIn],
         question_id: int
-        )->Question:
+    ) -> Question:
         """Creating multiple answers."""
         for choice in choices:
             self.create_choice_for_question(db, choice, question_id)
-        return crud_question.get(db,question_id)
+        return crud_question.get(db, question_id)
 
 
-class CRUDResalt(CRUDBase[Resalt,ResaltIn,ResaltIn]):
-     
-     def create(self, db_session: Session, *, obj_in: ResaltIn) -> Resalt:
+class CRUDResalt(CRUDBase[Resalt, ResaltIn, ResaltIn]):
+
+    def create(self, db_session: Session, *, obj_in: ResaltIn) -> Resalt:
         obj_in.answer_id
         obj_in.question_id
         choice: Choice = db_session.get(Choice, obj_in.answer_id)
         if choice.owner_id != obj_in.question_id:
             raise HTTPException(
-                status_code=404, 
+                status_code=404,
                 detail=f"There is no such answer in the question"
-                )
+            )
         return super().create(db_session, obj_in=obj_in)
 
 
-def _result_handler(db:Session, question_id: int) ->Query:
+def _result_handler(db: Session, question_id: int) -> Query:
     """выбранные ответы на вопрос"""
     return db.query(
-        Resalt.answer_id, 
+        Resalt.answer_id,
         Choice.text,
         Choice.value
-        ).filter(
-            Resalt.question_id == question_id
-            ).join(
-                Choice, Resalt.answer_id == Choice.id
-                ).all()
+    ).filter(
+        Resalt.question_id == question_id
+    ).join(
+        Choice, Resalt.answer_id == Choice.id
+    ).all()
 
 
 def read_resalt_for_question(
-        db:Session,
-        question_id: int,
-    ):
+    db: Session,
+    question_id: int,
+):
     question_obj = db.get(Question, question_id)
     if not question_obj:
-            raise HTTPException(
-                status_code=404, 
-                detail=f"There is no question with id = {question_id}"
-                )
-    list_answer = _result_handler(db,question_id=question_id)
-    response = AnswerListAndQuestion(question = question_obj,answers=list_answer)
+        raise HTTPException(
+            status_code=404,
+            detail=f"There is no question with id = {question_id}"
+        )
+    list_answer = _result_handler(db, question_id=question_id)
+    response = AnswerListAndQuestion(
+        question=question_obj, answers=list_answer)
     return response
 
 
 crud_question: CRUDQuestion = CRUDQuestion(Question)
 crud_choice: CRUDChoice = CRUDChoice(Choice)
 crud_resalt: CRUDResalt = CRUDResalt(Resalt)
-
-

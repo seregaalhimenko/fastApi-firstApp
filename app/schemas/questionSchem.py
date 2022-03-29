@@ -1,7 +1,8 @@
+from typing import Optional
 from pydantic import BaseModel
 
 # from .resaltSchem import ResaltOut  cicle
-from .choiceSchem import ChoiceOut
+from .choiceSchem import ChoiceOut,ShortChoiceIn
 
 class QuestionBase(BaseModel):
     text: str
@@ -20,3 +21,6 @@ class QuestionOut(QuestionBase):
 class QuestionDetailOut(QuestionOut):
     """Displaying a question with all possible answers"""
     choices: list[ChoiceOut] = []
+
+class QuestionDetailIn(QuestionIn):
+    choices: Optional[list[ShortChoiceIn]] = None
