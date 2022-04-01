@@ -1,10 +1,12 @@
 from fastapi import Body, APIRouter, Depends 
 from fastapi.responses import JSONResponse
+from typing import Union
+from pydantic import Field
 
 from sqlalchemy.orm import Session
 from app.dependencies import get_db, output_schema_definition
 
-from app.schemas.questionSchem import QuestionOut, QuestionDetailOut, QuestionIn
+from app.schemas.questionSchem import QuestionOut, QuestionDetailOut, QuestionIn, QuestionDetailIn
 from app.schemas.choiceSchem import ShortChoiceIn
 
 from app.service import crud_question
@@ -15,10 +17,13 @@ router = APIRouter(
 )
 
 @router.post("/")
-def create_question(question: QuestionIn, choices :list[ShortChoiceIn] = Body(...), db: Session = Depends(get_db)):
+def castom_create_question(question: QuestionDetailIn , db: Session = Depends(get_db)):
     """ Сreating a question with one or more answers."""
-    obj = crud_question.create(db=db, question=question,choices=choices)
-    return JSONResponse(status_code=201,headers={"Location":"/choice/{}/".format(obj.id)})
+    if "choices" in question.dict():
+        obj = crud_question.castom_create(db=db, question=question)
+        return JSONResponse(status_code=201,headers={"Location":"/question/{}/".format(obj.id)})
+    obj = crud_question.create(db_session=db, obj_in=question)
+    return JSONResponse(status_code=201,headers={"Location":"/question/{}/".format(obj.id)})
 
 
 @router.get("/", response_model=list[QuestionOut])
@@ -29,7 +34,7 @@ def read_list_questions(skip: int = 0, limit: int = 100, db: Session = Depends(g
 
 
 @router.get("/{id}/")
-def read_question(id: int , db: Session = Depends(get_db), detail_mode: bool=False):
+def read_question(id: int , detail_mode: bool=False, db: Session = Depends(get_db)):
     """Getting a specific question
         params: detail_mode
         by default fasle if set to true there will be a verbose output of the question
