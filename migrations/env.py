@@ -1,3 +1,5 @@
+import app.models as molels
+from core import settings
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -9,7 +11,6 @@ from alembic import context
 # access to the values within the .ini file in use.
 
 config = context.config
-from core import settings
 config.set_main_option("sqlalchemy.url", settings.SQLALCHEMY_DATABASE_URL)
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -20,7 +21,6 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-import app.models as molels
 target_metadata = molels.Base.metadata
 
 # other values from the config, defined by the needs of env.py,

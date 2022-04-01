@@ -9,13 +9,14 @@ class Question(Base):
     """Model Question"""
 
     __tablename__ = "question"
-    
+
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     text = Column(String)
 
-    choices = relationship("Choice", cascade="all, delete-orphan", back_populates="owner")
-    resalt = relationship("Resalt", cascade="all, delete-orphan", back_populates="question")
-
+    choices = relationship(
+        "Choice", cascade="all, delete-orphan", back_populates="owner")
+    resalt = relationship(
+        "Resalt", cascade="all, delete-orphan", back_populates="question")
 
 
 class Choice(Base):
@@ -25,13 +26,11 @@ class Choice(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     text = Column(String)
-    value = Column(Boolean) # determines the correct choice or not
+    value = Column(Boolean)  # determines the correct choice or not
     owner_id = Column(Integer, ForeignKey("question.id"))
 
     owner = relationship("Question",  back_populates="choices")
     resalt = relationship("Resalt", back_populates="choice")
-
-
 
 
 class Resalt(Base):

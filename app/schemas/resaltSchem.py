@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from .questionSchem import QuestionDetailOut
-from .choiceSchem import  ChoiceOut
+from .choiceSchem import ChoiceOut
 
 
 class ResaltBase(BaseModel):

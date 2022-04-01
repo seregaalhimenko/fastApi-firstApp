@@ -1,11 +1,10 @@
 
 from typing import Optional, Generic, TypeVar, Type
 from fastapi.encoders import jsonable_encoder
-from fastapi import  HTTPException
+from fastapi import HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from core.db import Base
-
 
 
 ModelType = TypeVar("ModelType", bound=Base)
@@ -26,23 +25,23 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def get(self, db_session: Session, id: int) -> Optional[ModelType]:
         obj = db_session.get(self.model, id)
         if not obj:
-            raise HTTPException(                               
-                status_code=404, 
+            raise HTTPException(
+                status_code=404,
                 detail="{} not found".format(self.model.__name__)
-                )
+            )
         return obj
 
     def get_multi(self, db_session: Session, *, skip=0, limit=100) -> list[ModelType]:
-        if  limit > 0 and 0 <= skip < limit:
+        if limit > 0 and 0 <= skip < limit:
             return db_session.query(self.model).offset(skip).limit(limit).all()
-        raise HTTPException(                               
-                status_code=404, 
-                detail="Wrong values skip, limit"
-                )
+        raise HTTPException(
+            status_code=404,
+            detail="Wrong values skip, limit"
+        )
 
     def update(
-        self, db_session: Session, *,id: int, obj_in: UpdateSchemaType
-) -> ModelType:
+        self, db_session: Session, *, id: int, obj_in: UpdateSchemaType
+    ) -> ModelType:
         db_obj = db_session.get(self.model, id)
         if not db_obj:
             raise HTTPException(
@@ -57,14 +56,13 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db_session.refresh(db_obj)
         return db_obj
 
-
     def remove(self, db_session: Session, *, id: int) -> ModelType:
         obj = db_session.get(self.model, id)
         if not obj:
             raise HTTPException(
-                status_code=404, 
+                status_code=404,
                 detail="{} not found".format(self.model.__name__)
-                )  
+            )
         db_session.delete(obj)
         db_session.commit()
         return {"ok": True}
@@ -75,4 +73,4 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db_session.add(db_obj)
         db_session.commit()
         db_session.refresh(db_obj)
-        return db_obj   
+        return db_obj

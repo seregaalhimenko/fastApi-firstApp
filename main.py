@@ -13,7 +13,6 @@ app.include_router(choices_router.router)
 app.include_router(res_router.router)
 
 
-
 @app.get("/", response_class=RedirectResponse)
 def index():
     return "/docs/"
