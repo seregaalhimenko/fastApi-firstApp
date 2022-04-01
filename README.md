@@ -3,8 +3,8 @@
 Приложение представляет выполнение тестового задания
 # Запуск
 соборка
-' docker-compose build '
+`docker-compose build`
 после запуск
-'docker-compose up'
+`docker-compose up`
 или собрать и запустить сразу
-' docker-compose up --build '
+`docker-compose up --build`
