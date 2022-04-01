@@ -1,7 +1,10 @@
 from os import environ
 
-DB_USER = environ.get("DB_USER", "user")
-DB_PASSWORD = environ.get("DB_PASSWORD", "password")
-DB_HOST = environ.get("DB_HOST", "localhost")
-DB_NAME = "quizDb"
-DB_PORT= environ.get("DB_PORT", "5432")
+DB_USER = environ.get("POSTGRES_USER", "postgres")
+DB_PASSWORD = environ.get("POSTGRES_PASSWORD", "postgres")
+DB_HOST = environ.get("POSTGRES_HOST", "localhost")
+DB_NAME = environ.get("POSTGRES_NAME", "postgres")
+DB_PORT= environ.get("POSTGRES_PORT", "5432")
+
+
+SQLALCHEMY_DATABASE_URL=f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
