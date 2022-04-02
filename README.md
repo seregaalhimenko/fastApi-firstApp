@@ -14,8 +14,9 @@
 
 `docker-compose up --build`
 
-Для настройки базы данных можете изменить файл ` core/settings.py `
-*Если используете Docker не забудьте изменить и файлы **Dockerfile, docker-compose.yml** *
+Для настройки базы данных можете изменить файл ` core/settings.py `  
+
+*Если используете Docker не забудьте изменить и файлы **Dockerfile, docker-compose.yml***
 ## Немного о приложении
 Используется python 3.9
 
