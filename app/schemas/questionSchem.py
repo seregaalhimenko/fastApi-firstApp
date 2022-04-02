@@ -1,7 +1,7 @@
 from typing import Optional
 from pydantic import BaseModel
 
-# from .resaltSchem import ResaltOut  cicle
+# from .resultSchem import ResultOut  cicle
 from .choiceSchem import ChoiceOut, ShortChoiceIn
 
 

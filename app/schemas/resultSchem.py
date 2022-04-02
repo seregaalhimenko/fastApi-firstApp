@@ -3,12 +3,12 @@ from .questionSchem import QuestionDetailOut
 from .choiceSchem import ChoiceOut
 
 
-class ResaltBase(BaseModel):
+class ResultBase(BaseModel):
     class Config:
         orm_mode = True
 
 
-class ResaltIn(ResaltBase):
+class ResultIn(ResultBase):
     """Result input display"""
     answer_id: int
     question_id: int
@@ -19,14 +19,14 @@ class AnswerOut(ChoiceOut):
     pass
 
 
-class ResaltOut(ResaltBase):
+class ResultOut(ResultBase):
     """Display of the  result """
     id: int
     answer_id: int
     question_id: int
 
 
-class ResaltDatailOut(ResaltOut):
+class ResultDatailOut(ResultOut):
     """Full display of the  result """
     question: QuestionDetailOut
     choice: AnswerOut

@@ -3,7 +3,7 @@ from fastapi.responses import RedirectResponse
 
 from app.routers import questions as ques_router
 from app.routers import choices as choices_router
-from app.routers import resalt as res_router
+from app.routers import result as res_router
 
 
 app = FastAPI(

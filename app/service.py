@@ -7,11 +7,11 @@ from .schemas.questionSchem import QuestionIn, QuestionDetailIn
 from .schemas.questionSchem import QuestionIn as QuestionUpdate
 from .schemas.choiceSchem import ChoiceIn, ShortChoiceIn
 from .schemas.choiceSchem import ChoiceIn as ChoiceInUpdate
-from .schemas.resaltSchem import ResaltIn
+from .schemas.resultSchem import ResultIn
 from .schemas.answerSchem import AnswerListAndQuestion
 
 
-from .models import Question, Choice, Resalt
+from .models import Question, Choice, Result
 from .base_crud import CRUDBase
 
 
@@ -81,9 +81,9 @@ class CRUDChoice(CRUDBase[Choice, ChoiceIn, ChoiceInUpdate]):
         return crud_question.get(db, question_id)
 
 
-class CRUDResalt(CRUDBase[Resalt, ResaltIn, ResaltIn]):
+class CRUDResult(CRUDBase[Result, ResultIn, ResultIn]):
 
-    def create(self, db_session: Session, *, obj_in: ResaltIn) -> Resalt:
+    def create(self, db_session: Session, *, obj_in: ResultIn) -> Result:
         obj_in.answer_id
         obj_in.question_id
         question_obj = db_session.get(Question, obj_in.question_id)
@@ -105,17 +105,17 @@ class CRUDResalt(CRUDBase[Resalt, ResaltIn, ResaltIn]):
 def _result_handler(db: Session, question_id: int) -> Query:
     """выбранные ответы на вопрос"""
     return db.query(
-        Resalt.answer_id,
+        Result.answer_id,
         Choice.text,
         Choice.value
     ).filter(
-        Resalt.question_id == question_id
+        Result.question_id == question_id
     ).join(
-        Choice, Resalt.answer_id == Choice.id
+        Choice, Result.answer_id == Choice.id
     ).all()
 
 
-def read_resalt_for_question(
+def read_result_for_question(
     db: Session,
     question_id: int,
 ):
@@ -133,4 +133,4 @@ def read_resalt_for_question(
 
 crud_question: CRUDQuestion = CRUDQuestion(Question)
 crud_choice: CRUDChoice = CRUDChoice(Choice)
-crud_resalt: CRUDResalt = CRUDResalt(Resalt)
+crud_result: CRUDResult = CRUDResult(Result)

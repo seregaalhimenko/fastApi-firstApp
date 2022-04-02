@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from app.dependencies import get_db, output_schema_definition
 
 from app.schemas.questionSchem import QuestionOut, QuestionDetailOut, QuestionIn, QuestionDetailIn
-from app.schemas.choiceSchem import ShortChoiceIn
+# from app.schemas.choiceSchem import ShortChoiceIn
 
 from app.service import crud_question
 

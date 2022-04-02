@@ -15,8 +15,8 @@ class Question(Base):
 
     choices = relationship(
         "Choice", cascade="all, delete-orphan", back_populates="owner")
-    resalt = relationship(
-        "Resalt", cascade="all, delete-orphan", back_populates="question")
+    result = relationship(
+        "Result", cascade="all, delete-orphan", back_populates="question")
 
 
 class Choice(Base):
@@ -30,12 +30,12 @@ class Choice(Base):
     owner_id = Column(Integer, ForeignKey("question.id"))
 
     owner = relationship("Question",  back_populates="choices")
-    resalt = relationship("Resalt", back_populates="choice")
+    result = relationship("Result", back_populates="choice")
 
 
-class Resalt(Base):
-    """Model Resalt"""
-    __tablename__ = "resalt"
+class Result(Base):
+    """Model Result"""
+    __tablename__ = "result"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     # Не совсем понимаю как строиться составной первичный ключ под капотом у orm
@@ -44,5 +44,5 @@ class Resalt(Base):
         "question.id"))  # primary_key=True
     answer_id = Column(Integer, ForeignKey("choice.id"))  # primary_key=True
 
-    question = relationship("Question", back_populates="resalt")
-    choice = relationship("Choice", back_populates="resalt")
+    question = relationship("Question", back_populates="result")
+    choice = relationship("Choice", back_populates="result")
