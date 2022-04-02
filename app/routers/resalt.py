@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response, status
 from fastapi.responses import JSONResponse
 
 from sqlalchemy.orm import Session
@@ -20,7 +20,7 @@ router = APIRouter(
 def create_resalt(request: ResaltIn, db: Session = Depends(get_db)):
     """Сreating a result"""
     obj = crud_resalt.create(db, obj_in=request)
-    return JSONResponse(status_code=201, headers={"Location": "/choice/{}/".format(obj.id)})
+    return JSONResponse(status_code=201, headers={"Location": "/resalt/{}/".format(obj.id)})
 
 
 @router.get("/{id}/")
@@ -45,11 +45,13 @@ def update_resalt(id: int, request: ResaltIn, db: Session = Depends(get_db)):
     return crud_resalt.update(db_session=db, id=id, obj_in=request)
 
 
-@router.delete("/{id}", status_code=204)
+@router.delete("/{id}", responses={204: {"model": None}})
 def delete_resalt(id: int, db: Session = Depends(get_db)):
     """Result delete"""
     crud_resalt.remove(db_session=db, id=id)
-    return JSONResponse(status_code=204)
+    # такой способ чтоб исключить ошибку
+    # h11._util.LocalProtocolError: Too much data for declared Content-Length h11._util.LocalProtocolError: Too much data for declared Content-Length
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get("/question/{question_id}/", response_model=AnswerListAndQuestion)

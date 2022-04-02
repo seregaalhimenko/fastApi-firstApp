@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from ..dependencies import get_db
-from ..schemas.choiceSchem import ChoiceIn
+from ..schemas.choiceSchem import ChoiceIn, ShortChoiceIn
 from ..schemas.questionSchem import QuestionDetailOut
 
 from ..service import crud_choice
@@ -16,7 +16,7 @@ router = APIRouter(
 
 
 @router.post("/{question_id}", response_model=QuestionDetailOut, status_code=201)
-def create_list_choice(choices: list[ChoiceIn], question_id: int, db: Session = Depends(get_db)):
+def create_list_choice(choices: list[ShortChoiceIn], question_id: int, db: Session = Depends(get_db)):
     """Create answers to a question"""
     return crud_choice.create_list_choice(db=db, choices=choices, question_id=question_id)
 
@@ -35,7 +35,7 @@ def read_choice(id: int, db: Session = Depends(get_db)):
     return choice
 
 
-@router.put("/{id}/", response_model=ChoiceIn)
+@router.put("/{id}/")
 def update_choice(id: int, choice: ChoiceIn, db: Session = Depends(get_db)):
     """Answer update"""
     return crud_choice.update(db, id=id, obj_in=choice)

@@ -38,8 +38,11 @@ class Resalt(Base):
     __tablename__ = "resalt"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    question_id = Column(Integer, ForeignKey("question.id"))
-    answer_id = Column(Integer, ForeignKey("choice.id"))
+    # Не совсем понимаю как строиться составной первичный ключ под капотом у orm
+    # Сделать так, чтобы в базе не было одинаковых записей и не проверять перед добавлением строки в таблицу( возможно придется обработать исключение )
+    question_id = Column(Integer, ForeignKey(
+        "question.id"))  # primary_key=True
+    answer_id = Column(Integer, ForeignKey("choice.id"))  # primary_key=True
 
     question = relationship("Question", back_populates="resalt")
     choice = relationship("Choice", back_populates="resalt")

@@ -6,7 +6,9 @@ from app.routers import choices as choices_router
 from app.routers import resalt as res_router
 
 
-app = FastAPI()
+app = FastAPI(
+    version="1"
+)
 
 app.include_router(ques_router.router)
 app.include_router(choices_router.router)

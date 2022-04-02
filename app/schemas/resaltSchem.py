@@ -29,4 +29,4 @@ class ResaltOut(ResaltBase):
 class ResaltDatailOut(ResaltOut):
     """Full display of the  result """
     question: QuestionDetailOut
-    choice: AnswerOut  # = field alias?
+    choice: AnswerOut
